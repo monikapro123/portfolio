@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="flex items-center justify-center h-screen bg-gray-900">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg w-80 text-white">
+      <div
+        class="mb-4 p-4 text-right text-2xl font-semibold bg-gray-700 rounded"
+        id="display"
+      >
+        0
+      </div>
+      <div class="grid grid-cols-4 gap-3">
+        <button class="btn bg-red-500" data-value="C">C</button>
+        <button class="btn bg-gray-600" data-value="±">±</button>
+        <button class="btn bg-gray-600" data-value="%">%</button>
+        <button class="btn bg-blue-500" data-value="/">/</button>
+        <button class="btn" data-value="7">7</button>
+        <button class="btn" data-value="8">8</button>
+        <button class="btn" data-value="9">9</button>
+        <button class="btn bg-blue-500" data-value="*">*</button>
+        <button class="btn" data-value="4">4</button>
+        <button class="btn" data-value="5">5</button>
+        <button class="btn" data-value="6">6</button>
+        <button class="btn bg-blue-500" data-value="-">-</button>
+        <button class="btn" data-value="1">1</button>
+        <button class="btn" data-value="2">2</button>
+        <button class="btn" data-value="3">3</button>
+        <button class="btn bg-blue-500" data-value="+">+</button>
+        <button class="btn col-span-2" data-value="0">0</button>
+        <button class="btn" data-value=".">.</button>
+        <button class="btn bg-green-500" data-value="=">=</button>
+      </div>
+    </div>
+
+    <script>
+      const display = document.getElementById("display");
+      const buttons = document.querySelectorAll(".btn");
+
+      let currentInput = "";
+      let operator = "";
+      let previousInput = "";
+      let resetDisplay = false;
+
+      function updateDisplay() {
+        display.innerText = previousInput + operator + currentInput || "0";
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const value = button.getAttribute("data-value");
+
+          if (value === "C") {
+            currentInput = "";
+            previousInput = "";
+            operator = "";
+          } else if (value === "=") {
+            if (previousInput && operator) {
+              try {
+                currentInput = eval(
+                  previousInput + operator + currentInput
+                ).toString();
+                previousInput = "";
+                operator = "";
+                resetDisplay = true;
+              } catch {
+                currentInput = "Error";
+              }
+            }
+          } else if (["+", "-", "*", "/"].includes(value)) {
+            if (currentInput === "") return;
+            if (previousInput && operator) {
+              previousInput = eval(
+                previousInput + operator + currentInput
+              ).toString();
+            } else {
+              previousInput = currentInput;
+            }
+            operator = value;
+            currentInput = "";
+          } else if (value === "±") {
+            currentInput = (parseFloat(currentInput) * -1).toString();
+          } else if (value === "%") {
+            currentInput = (parseFloat(currentInput) / 100).toString();
+          } else {
+            if (resetDisplay) {
+              currentInput = value;
+              resetDisplay = false;
+            } else {
+              currentInput =
+                currentInput === "0" ? value : currentInput + value;
+            }
+          }
+          updateDisplay();
+        });
+      });
+    </script>
+
+    <style>
+      .btn {
+        padding: 15px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 8px;
+        background-color: #4a5568;
+        transition: background 0.2s;
+        color: white;
+      }
+      .btn:hover {
+        background-color: #718096;
+      }
+      .bg-blue-500:hover {
+        background-color: #4299e1;
+      }
+      .bg-green-500:hover {
+        background-color: #48bb78;
+      }
+      .bg-red-500:hover {
+        background-color: #e53e3e;
+      }
+    </style>
+  </body>
+</html>
